@@ -11,9 +11,10 @@ class TitleLabel(QLabel):
 
     def setI_mainWindow(self, mainWin):
         self.I_mainWindow = mainWin
+
     def setIndex(self, index):
         self.index = index
 
-    def mouseDoubleClickEvent(self, e):
-        self.I_mainWindow.win_message.setMessage()
+    def mousePressEvent(self, e):
+        self.I_mainWindow.win_message.setMessage(self.index)
         self.I_mainWindow.win_message.exec_()

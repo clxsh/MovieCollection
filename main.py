@@ -50,6 +50,7 @@ class mainWindow(QMainWindow):
 
     def WinMovieMessage(self):
         self.win_message = MovieMessage()
+        self.win_message.setI_mainWindow(self)
         self.win_message.resize(700, 800)
 
     def WinLabels(self):
@@ -285,6 +286,8 @@ class mainWindow(QMainWindow):
             # label_movieName.setAlignment(Qt.AlignCenter)
             label_movieNames.append (TitleLabel(movieListWidget))
             label_movieNames[i].setI_mainWindow(self)
+            label_movieNames[i].setIndex(i)
+            
             # label_movieNames[i].setMessage
 
             label_movieNames[i].setText(self.movieList[movieId]["title"])
@@ -338,6 +341,7 @@ class mainWindow(QMainWindow):
         self.penWidth = 25
         self.regularImageWidth = 330
         self.regularImageHeight = int(330 * 1.4) 
+        self.fontStyle = "{ font-family:'Microsoft YaHei';" + "font-size:25px;color:#666666;}"
 
         self.CreateLayout()
         # ~ setCenterWindow()
