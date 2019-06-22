@@ -30,6 +30,6 @@ if __name__ == "__main__":
     # # Movie test
     # print(session.query(Movie).filter(Movie.title.like("%AP-510%")).count())
 
-    query_result = query_movie()
-    for id in query_result.keys():
-        print(query_result[id])
+    # query_result = query_movie()
+    # for id in query_result.keys():
+    #     print(query_result[id])

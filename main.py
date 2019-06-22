@@ -6,8 +6,9 @@ import PyQt5
 import sys
 from dbcontroller import query_movie
 
-import ImageLabel
+from ImageLabel import ImageLabel
 from MovieMessage import MovieMessage
+from TitleLabel import TitleLabel
 #import test1
 
 # listWidget 是视频列表， labelWidget是标签页面
@@ -195,6 +196,9 @@ class mainWindow(QMainWindow):
         # }
         self.dock_movieList  = QDockWidget(self)
         self.dock_movieList.setFeatures(QDockWidget.NoDockWidgetFeatures)
+        self.dock_movieList.setAllowedAreas(Qt.RightDockWidgetArea)
+        self.dock_movieList.setMinimumWidth(300)
+
         # 删除dock窗口标题
         self.dock_movieList.setTitleBarWidget(QWidget())
 
@@ -206,7 +210,6 @@ class mainWindow(QMainWindow):
         # 布局
         movieListLayout = QGridLayout()
         movieListLayout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        # movieListWidget.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         # movieListLayout.setContentsMargins(30,30,30,0)
 
@@ -248,16 +251,22 @@ class mainWindow(QMainWindow):
             # movieImg.load(self.movieList[movieName]['movieImagePath'])
             a = QImage(500, 500, QImage.Format_RGB888)
             movieImage.append (a)
-            movieImage[i].load(self.movieList[movieId]["cover_path"])
+
+            posterPath = self.movieList[movieId]["cover_path"]
+            if posterPath == "":
+                posterPath = "./source/no_image.jpg"
+
+            movieImage[i].load(posterPath)
             # movieImage[i].scaled((int)(movieImage[i].width() * 0.3),
             # (int)(movieImage[i].height() * 0.3))
-            labelMovie = QLabel(movieListWidget)
-            labelMovie.setScaledContents(True)
+            labelMovie = ImageLabel(movieListWidget)
+            labelMovie.setI_mainWindow(self)
             # labelMovie.resize((int)(movieImage[i].width() * 0.3),
             # (int)(movieImage[i].height() * 0.3))
 
 
             labelMovie.setPixmap(QPixmap.fromImage(movieImage[i]))
+            labelMovie.setVideoPath(self.movieList[movieId]['video_path'])
 
             label_movieLabels.append(labelMovie)
             label_movieLabels[i].setAlignment(Qt.AlignmentFlag.AlignCenter)
@@ -265,22 +274,46 @@ class mainWindow(QMainWindow):
             label_movieLabels[i].setScaledContents(True)
             label_movieLabels[i].setPixmap(QPixmap.fromImage(movieImage[i]))
             # label_movieLabels[i].resize(movieImage[i].width(), movieImage[i].height());
-            labelMovie.setFixedSize((int)(movieImage[i].width() * 0.6),
-            (int)(movieImage[i].height() * 0.6))
+            # labelMovie.setFixedSize((int)(movieImage[i].width() * 0.6),
+            # (int)(movieImage[i].height() * 0.6))
+            labelMovie.setFixedSize(self.regularImageWidth, self.regularImageHeight)
 
 
 
             # label_movieName = QLabel(movieListWidget)
             # label_movieName.setText(movieName)
             # label_movieName.setAlignment(Qt.AlignCenter)
-            label_movieNames.append (QLabel(movieListWidget))
+            label_movieNames.append (TitleLabel(movieListWidget))
+            label_movieNames[i].setI_mainWindow(self)
+            # label_movieNames[i].setMessage
+
             label_movieNames[i].setText(self.movieList[movieId]["title"])
-            label_movieNames[i].setAlignment(Qt.AlignCenter)
+            label_movieNames[i].setFixedWidth(self.regularImageWidth)
+
+            
+            # 设置影片名的样式，字体大小，长短
+            font = QFont()
+            font.setPixelSize(self.penWidth)
+            label_movieNames[i].setFont(font)
+
+
+            # 获取字符串占像素大小
+            fontMetrics = QFontMetrics(font)
+            titleNameSize = fontMetrics.boundingRect(self.movieList[movieId]["title"]).width()
+    
+            if titleNameSize > label_movieNames[i].width():
+                label_movieNames[i].setText (fontMetrics.elidedText(self.movieList[movieId]["title"], 
+                Qt.ElideRight, label_movieNames[i].width()))
+            
+            # label_movieNames[i].setAlignment(Qt.AlignCenter)
+            
+            # a = QLabel()
+            # label_movieLabels[i]
             movieListLayout.addWidget(label_movieLabels[i], 2 * it_i, it_j, 1, 1)
             movieListLayout.addWidget(label_movieNames[i], 2 * it_i + 1, it_j, 1, 1)
             i += 1; it_j += 1
-            if(it_j > 2):
-                it_i += 2
+            if it_j > 2 :
+                it_i += 1
                 it_j = 0
 
 
@@ -288,6 +321,7 @@ class mainWindow(QMainWindow):
         movieListWidget.setLayout(movieListLayout)
         # movieListWidget.setFixedWidth(1000)
         movieListWidget.adjustSize()
+        
         self.dock_movieList.setWidget(movieListWidget)
 
         scrollArea.setWidget(movieListWidget)
@@ -300,6 +334,10 @@ class mainWindow(QMainWindow):
         height = QApplication.desktop().height()
         self.move(int(width * 0.05), int(height * 0.01) )
         self.resize(int(width * 0.8), int(height * 0.8) )
+
+        self.penWidth = 25
+        self.regularImageWidth = 330
+        self.regularImageHeight = int(330 * 1.4) 
 
         self.CreateLayout()
         # ~ setCenterWindow()
