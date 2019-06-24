@@ -16,5 +16,6 @@ class TitleLabel(QLabel):
         self.index = index
 
     def mousePressEvent(self, e):
-        self.I_mainWindow.win_message.setMessage(self.index)
-        self.I_mainWindow.win_message.exec_()
+        # self.I_mainWindow.win_message.setMessage(self.index)
+        # self.I_mainWindow.win_message.exec_()
+        a = 3

@@ -68,7 +68,7 @@ class mainWindow(QMainWindow):
         labelsWidget = QWidget(self.dock_labels)
         # 布局
         labelsLayout = QGridLayout()
-        labelsLayout.setAlignment(Qt.AlignmentFlag.AlignTop);
+        labelsLayout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         # 设置按钮
         self.actor_labels = [
@@ -85,14 +85,6 @@ class mainWindow(QMainWindow):
             'label1',
             'label1',
         ]
-        # pLabel = QLabel(self)
-        # pLabel.setText("<a href='http://blog.csdn.net/qq_35488967?viewmode=contents'>leyou2018 blog</a>")
-        # pLabel.setOpenExternalLinks(True)
-
-        # button1 = QPushButton(self)
-        # button1.setText("dsf")
-        # button1.setFlat(True)
-        # button1.setFixedSize(30,30)
 
         label_actor = QLabel(self)
         label_actor.setText('演员:')
@@ -114,7 +106,7 @@ class mainWindow(QMainWindow):
         actorButton = []
         for actorName in self.actor_labels:
             actorButton.append(QPushButton(actorName, self))
-            # print(actorName)
+
             actorButton[i].setStyleSheet("QPushButton{ font-family:'Microsoft YaHei';" +
             "font-size:25px;color:#666666;}");
             actorButton[i].resize(actorButton[i].sizeHint().width(), actorButton[i].sizeHint().height());
@@ -122,7 +114,6 @@ class mainWindow(QMainWindow):
             # actorButton[i].setFixedSize(100, 40)
             actorButton[i].setFlat(True)
 
-            # print(str(it_i)+ ' ' + str(it_j))
             labelsLayout.addWidget(actorButton[i], it_i, it_j, 1, 1)
             i += 1; it_j += 1
             if(it_j > 2):
@@ -159,7 +150,6 @@ class mainWindow(QMainWindow):
 
 
 
-
         labelsWidget.setLayout(labelsLayout)
         # labelsWidget.setFixedWidth(300)
         self.dock_labels.setWidget(labelsWidget)
@@ -172,10 +162,6 @@ class mainWindow(QMainWindow):
     def WinMain(self):
 
 
-        # self.movieList = ["video1"]
-        # self.movieList.append("sa")
-        # for a in self.movieList:
-        #     print(a)
 
         # 初始化电影列表和便签列表
         self.movieList = query_movie()
@@ -191,11 +177,6 @@ class mainWindow(QMainWindow):
         # for i in range(1, 5):
         #     self.movieList['videoName' + str(i)] = model1
         # self.movieList['videoName' + str(5)] = model2
-
-        # self.movieList['videoName1'] = {
-        #     actor: "actorName1"
-        #
-        # }
         self.dock_movieList  = QDockWidget(self)
         self.dock_movieList.setFeatures(QDockWidget.NoDockWidgetFeatures)
         self.dock_movieList.setAllowedAreas(Qt.RightDockWidgetArea)
@@ -211,7 +192,8 @@ class mainWindow(QMainWindow):
 
         # 布局
         # movieListLayout = QGridLayout()
-        movieListLayout = QVBoxLayout(self.dock_movieList)
+        # movieListLayout = QVBoxLayout(self.dock_movieList)
+        movieListLayout = QVBoxLayout()
         movieListLayout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         # movieListLayout.setContentsMargins(30,30,30,0)
@@ -249,7 +231,6 @@ class mainWindow(QMainWindow):
         # it_j = 0
 
         # for movieId in self.movieList.keys():
-        #     # print(movieName)
         #     # movieImg = QImage(300, 300, QImage.Format_RGB888)
         #     # movieImg.load(self.movieList[movieName]['movieImagePath'])
         #     a = QImage(500, 500, QImage.Format_RGB888)
@@ -329,7 +310,14 @@ class mainWindow(QMainWindow):
         movieListWidget = self.addMovieWidget()
         movieListLayout.addWidget(movieListWidget)
         self.dock_movieList.setWidget(movieListWidget)
-        # self.dock_movieList.setLayout(movieListLayout)
+
+
+        # self.movieList.pop(1)        
+        # self.movieList.pop(3)        
+        # self.movieList.pop(2)        
+        # movieListWidget = self.addMovieWidget()
+        # self.dock_movieList.setWidget(movieListWidget)
+
 
         # scrollArea.setWidget(movieListWidget)
         # self.dock_movieList.setWidget(scrollArea)
@@ -351,15 +339,56 @@ class mainWindow(QMainWindow):
         # ~ setCenterWindow()
 
         self.show()
+    # def addlabelsWidget(self):
+    #     listwidget = QListWidget(self)
+    #     label_actor.setText('演员:')
+
+
+    #     for actorName in self.actor_labels:
+    #         actorButton.append(QPushButton(actorName, self))
+    #         actorButton[i].resize(actorButton[i].sizeHint().width(), actorButton[i].sizeHint().height());
+
+    #     for labelName in self.labels:
+    #         labelsButton.append(QPushButton(labelName, self))
+    #         labelsButton[i].setStyleSheet("QPushButton{ font-family:'Microsoft YaHei';" +
+    #         "font-size:25px;color:#666666;}");
+    #         labelsButton[i].resize(labelsButton[i].sizeHint().width(), labelsButton[i].sizeHint().height());
+
+    #         labelsButton[i].setFlat(True)
+    #         labelsLayout.addWidget(labelsButton[i], it_i, it_j, 1, 1)
+
+    #     # listwidget.setItemAlignment(Qt.AlignCenter)
+    #     listwidget.setIconSize(QSize(self.regularImageWidth, self.regularImageHeight))
+    #     listwidget.setResizeMode(QListView.Adjust)
+    #     listwidget.setViewMode(QListView.IconMode)
+    #     listwidget.setMovement(QListView.Static)
+    #     listwidget.setSpacing(10)
+
+    #     for i in self.actor_labels.keys():
+    #         item = QListWidgetItem(self.actor_labels[i])
+    #         font = QFont()
+    #         font.setPixelSize(25)
+    #         item.setFont(font)
+    #         item.index = i
+
+    #         item.setSizeHint(QSize(self.regularImageWidth, self.regularImageHeight+25))
+    #         # listwidget.insertItem(i, item)
+    #         listwidget.addItem(item)
+    #     listwidget.itemClicked.connect(listwidget.movieClicked)
+    #     listwidget.itemDoubleClicked.connect(listwidget.movieDoubleClicked)
+    #         # item.clicked.connect(self.movieClicked)
+    #         # listwidget.ItemClicked.connect(movieClicked)
+    #     return listwidget
 
     def addMovieWidget(self):
-        listwidget = ListWidget(self)
-        # listwidget.setItemAlignment(Qt.AlignCenter)
-        listwidget.setIconSize(QSize(self.regularImageWidth, self.regularImageHeight))
-        listwidget.setResizeMode(QListView.Adjust)
-        listwidget.setViewMode(QListView.IconMode)
-        listwidget.setMovement(QListView.Static)
-        listwidget.setSpacing(10)
+        listWidget = MovieListWidget(self)
+        listWidget.setI_mainWindow(self)
+        # listWidget.setItemAlignment(Qt.AlignCenter)
+        listWidget.setIconSize(QSize(self.regularImageWidth, self.regularImageHeight))
+        listWidget.setResizeMode(QListView.Adjust)
+        listWidget.setViewMode(QListView.IconMode)
+        listWidget.setMovement(QListView.Static)
+        listWidget.setSpacing(10)
 
         for i in self.movieList.keys():
             posterPath = self.movieList[i]['cover_path']
@@ -372,29 +401,53 @@ class mainWindow(QMainWindow):
             font = QFont()
             font.setPixelSize(25)
             item.setFont(font)
-            # print(item.text())
+            item.index = i
             item.setSizeHint(QSize(self.regularImageWidth, self.regularImageHeight+25))
-            # listwidget.insertItem(i, item)
-            listwidget.addItem(item)
-            listwidget.itemPressed.connect(listwidget.movieClicked)
-            
+            # listWidget.insertItem(i, item)
+            listWidget.addItem(item)
+        # listWidget.itemClicked.connect(listWidget.movieClicked)
+        listWidget.itemDoubleClicked.connect(listWidget.movieDoubleClicked)
+        listWidget.itemPressed.connect(listWidget.mousePressed)
             # item.clicked.connect(self.movieClicked)
             # listwidget.ItemClicked.connect(movieClicked)
-        return listwidget
+        return listWidget
         # self.setCentralWidget(listwidget)
 
-class ListWidget(QListWidget):
-    # def __init__(self, parent=None):
-        # super(ListWidget, self).__init__(parent)
-        # self.i = 0
-        # self.setMessage()
+
+class MovieListWidget(QListWidget):
+    def __init__(self, parent=None):
+        super(MovieListWidget, self).__init__(parent)
+        self.timer = QTimer(self)
+
+    def setI_mainWindow(self, mainWin):
+        self.I_mainWindow = mainWin
+        
+    def mousePressed(self, item):
+        self.timer.start(500)
+        self.timer.timeout.connect(lambda:self.movieClicked(item))
+
 
     def movieClicked(self, item):
-        print(item.text())
-        # self.i+=1
-        # print(self.i)
+        self.timer.stop()
+
+        self.I_mainWindow.win_message = MovieMessage()
+        self.I_mainWindow.win_message.setI_mainWindow(self.I_mainWindow)
+        self.I_mainWindow.win_message.resize(700, 800)
+        self.I_mainWindow.win_message.setMessage(self.I_mainWindow.movieList[item.index])
+
+        self.I_mainWindow.win_message.exec_()
+        self.timer.timeout.disconnect()
+
+
         # cmd = ("PotPlayerMini64.exe " + self.movieList[1]['video_path'])
         # os.popen(cmd)
+    def movieDoubleClicked(self, item):
+        self.timer.stop()
+        self.timer.timeout.disconnect()
+
+
+        videoPath = self.I_mainWindow.movieList[item.index]['video_path']
+        print(item.text())
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

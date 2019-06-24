@@ -19,5 +19,6 @@ class ImageLabel(QLabel):
         self.videoPath = path
 
     def mouseDoubleClickEvent(self, e):
-        cmd = ("PotPlayerMini64.exe " + self.videoPath)
-        os.popen(cmd)
+        # cmd = ("PotPlayerMini64.exe " + self.videoPath)
+        # os.popen(cmd)
+        a = 3
