@@ -59,20 +59,11 @@ class mainWindow(QMainWindow):
 
     def WinLabels(self):
         self.dock_labels = QDockWidget(self)
+
         self.dock_labels.setFeatures(QDockWidget.NoDockWidgetFeatures)
 
-        # t1 = self.dock_labels.titleBarWidget()
-        # t2 = QWidget(self.dock_labels)
         # 删除dock窗口标题
         self.dock_labels.setTitleBarWidget(QWidget())
-        self.labelsLayout = QVBoxLayout()
-
-        # 滑动条区域
-        # scrollArea = QScrollArea(self.dock_labels)
-        # labelsWidget = QWidget(self.dock_labels)
-        # 布局
-        # labelsLayout = QGridLayout()
-        # labelsLayout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         # 设置按钮
         self.actor_labels = [
@@ -90,85 +81,13 @@ class mainWindow(QMainWindow):
             'label1',
         ]
 
-        label_actor = QLabel(self.dock_labels)
-        label_actor.setText('演员:')
-        label_actor.setFixedSize(100, 40)
-        actorWidget = self.addLabelsActorWidget()
-
-        label_tag = QLabel(self.dock_labels)
-        label_tag.setText('标签：')
-        label_tag.setFixedSize(100, 40)
-
-        tagWidget = self.addLabelsTagWidget()
-
-        self.labelsLayout.addWidget(label_actor)
-        self.labelsLayout.addWidget(actorWidget)
-        self.labelsLayout.addWidget(label_tag)
-        self.labelsLayout.addWidget(tagWidget)
-
-
-        widget = QWidget(self.dock_labels)
-        widget.setLayout(self.labelsLayout)
+        widget = self.updateLabelsWidget()
         self.dock_labels.setWidget(widget)
-        # self.dock_labels.setLayout(self.labelsLayout)
-#         it_i = 0
-#         it_j = 0
-#         i = 0
 
-#         label_white = QLabel(' ')
-#         labelsLayout.addWidget(label_white, it_i, it_j, 1, 1)
-#         it_i += 1
-#         labelsLayout.addWidget(label_white, it_i, it_j, 1, 1)
-#         it_i += 1
-
-#         labelsLayout.addWidget(label_actor, it_i, it_j, 1, 1)
-#         it_i+=1
-
-#         actorButton = []
-#         for actorName in self.actor_labels:
-#             actorButton.append(QPushButton(actorName, self))
-
-#             actorButton[i].setStyleSheet("QPushButton{ font-family:'Microsoft YaHei';" +
-#             "font-size:25px;color:#666666;}");
-#             actorButton[i].resize(actorButton[i].sizeHint().width(), actorButton[i].sizeHint().height());
-
-#             # actorButton[i].setFixedSize(100, 40)
-#             actorButton[i].setFlat(True)
-
-#             labelsLayout.addWidget(actorButton[i], it_i, it_j, 1, 1)
-#             i += 1; it_j += 1
-#             if(it_j > 2):
-#                 it_i += 1
-#                 it_j = 0
-#         # 到下一行
-#         if(it_j != 0):
-#             it_j = 0
-#             it_i += 1
-#         label_label = QLabel('标签：')
-#         labelsLayout.addWidget(label_label, it_i, it_j, 1, 1)
-#         it_i += 1
-
-#         i = 0
-#         labelsButton = []
-#         for labelName in self.labels:
-#             labelsButton.append(QPushButton(labelName, self))
-#             labelsButton[i].setStyleSheet("QPushButton{ font-family:'Microsoft YaHei';" +
-#             "font-size:25px;color:#666666;}");
-#             labelsButton[i].resize(labelsButton[i].sizeHint().width(), labelsButton[i].sizeHint().height());
-
-# # button->setStyleSheet( "QPushButton{border-image: url(navigation_more_normal.png);}"
-# #"QPushButton:hover{border-image: url(navigation_more_hover.png);}"
-# # "QPushButton:pressed{border-image: url(on_more_pressed.png);}"）；
-#             # labelsButton[i].setFixedSize(100, 40)
-#             labelsButton[i].setFlat(True)
-
-#             labelsLayout.addWidget(labelsButton[i], it_i, it_j, 1, 1)
-#             i += 1; it_j += 1
-#             if(it_j > 2):
-#                 it_i += 1
-#                 it_j = 0
-
-
+        # self.actor_labels.pop()
+        # self.actor_labels.pop()
+        # widget = self.updateLabelsWidget()
+        # self.dock_labels.setWidget(widget)
 
 
 #         labelsWidget.setLayout(labelsLayout)
@@ -177,6 +96,33 @@ class mainWindow(QMainWindow):
 
 #         scrollArea.setWidget(labelsWidget)
 #         self.dock_labels.setWidget(scrollArea)
+    def updateLabelsWidget(self):
+
+        labelsLayout = QVBoxLayout()
+
+        label_actor = QLabel(self.dock_labels)
+        label_actor.setText('演员:')
+        label_actor.setFixedSize(100, 40)
+        label_actor.setStyleSheet('QLabel' + self.fontStyle)
+        actorWidget = self.addLabelsActorWidget()
+
+        label_tag = QLabel(self.dock_labels)
+        label_tag.setText('标签：')
+        label_tag.setFixedSize(100, 40)
+        label_tag.setStyleSheet('QLabel' + self.fontStyle)
+
+
+        tagWidget = self.addLabelsTagWidget()
+
+        labelsLayout.addWidget(label_actor)
+        labelsLayout.addWidget(actorWidget)
+        labelsLayout.addWidget(label_tag)
+        labelsLayout.addWidget(tagWidget)
+
+
+        widget = QWidget(self.dock_labels)
+        widget.setLayout(labelsLayout)
+        return widget
 
 
 
@@ -206,123 +152,12 @@ class mainWindow(QMainWindow):
         # 删除dock窗口标题
         self.dock_movieList.setTitleBarWidget(QWidget())
 
-        # 滑动条区域
-        # scrollArea = QScrollArea(self.dock_movieList)
-        # movieListWidget = QWidget(self.dock_movieList)
-
 
         # 布局
         # movieListLayout = QGridLayout()
         # movieListLayout = QVBoxLayout(self.dock_movieList)
         movieListLayout = QVBoxLayout()
         movieListLayout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        # movieListLayout.setContentsMargins(30,30,30,0)
-
-        # a = QLabel(movieListWidget)
-        # a.setText("<p style='color: red; margin-left: 20px'><b>hell world</b></p>")
-        #
-        #
-        # videoName1 = 'videoName1'
-        # movie1 = QImage(300, 300, QImage.Format_RGB888)
-        # movie1.load(self.movieList[videoName1]['movieImagePath'])
-        #
-        # label1 = QLabel(movieListWidget)
-        # label1.setScaledContents(True)
-        #
-        # label1.setPixmap(QPixmap.fromImage(movie1))
-        # label1.resize(300, 300)
-        # label1_name = QLabel(movieListWidget)
-        # label1_name.setText(videoName1)
-        # label1_name.setAlignment(Qt.AlignCenter)
-        #
-        # movieListLayout.addWidget(label1, 0, 0, 1, 1)
-        # movieListLayout.addWidget(label1_name, 1, 0, 1, 1)
-
-
-
-        # 参数是 movieList
-        # movieImage = []
-        # label_movieLabels = []
-        # label_movieNames = []
-        # # self.movieLabelGroup = QButtonGroup()
-        # # movieName = []
-        # i = 0
-        # it_i = 0
-        # it_j = 0
-
-        # for movieId in self.movieList.keys():
-        #     # movieImg = QImage(300, 300, QImage.Format_RGB888)
-        #     # movieImg.load(self.movieList[movieName]['movieImagePath'])
-        #     a = QImage(500, 500, QImage.Format_RGB888)
-        #     movieImage.append (a)
-
-        #     posterPath = self.movieList[movieId]["cover_path"]
-        #     if posterPath == "":
-        #         posterPath = "./source/no_image.jpg"
-
-        #     movieImage[i].load(posterPath)
-        #     # movieImage[i].scaled((int)(movieImage[i].width() * 0.3),
-        #     # (int)(movieImage[i].height() * 0.3))
-        #     labelMovie = ImageLabel(movieListWidget)
-        #     labelMovie.setI_mainWindow(self)
-        #     # labelMovie.resize((int)(movieImage[i].width() * 0.3),
-        #     # (int)(movieImage[i].height() * 0.3))
-
-
-        #     labelMovie.setPixmap(QPixmap.fromImage(movieImage[i]))
-        #     labelMovie.setVideoPath(self.movieList[movieId]['video_path'])
-
-        #     label_movieLabels.append(labelMovie)
-        #     label_movieLabels[i].setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-        #     label_movieLabels[i].setScaledContents(True)
-        #     label_movieLabels[i].setPixmap(QPixmap.fromImage(movieImage[i]))
-        #     # label_movieLabels[i].resize(movieImage[i].width(), movieImage[i].height());
-        #     # labelMovie.setFixedSize((int)(movieImage[i].width() * 0.6),
-        #     # (int)(movieImage[i].height() * 0.6))
-        #     labelMovie.setFixedSize(self.regularImageWidth, self.regularImageHeight)
-
-
-
-        #     # label_movieName = QLabel(movieListWidget)
-        #     # label_movieName.setText(movieName)
-        #     # label_movieName.setAlignment(Qt.AlignCenter)
-        #     label_movieNames.append (TitleLabel(movieListWidget))
-        #     label_movieNames[i].setI_mainWindow(self)
-        #     label_movieNames[i].setIndex(i)
-            
-        #     # label_movieNames[i].setMessage
-
-        #     label_movieNames[i].setText(self.movieList[movieId]["title"])
-        #     label_movieNames[i].setFixedWidth(self.regularImageWidth)
-
-            
-        #     # 设置影片名的样式，字体大小，长短
-        #     font = QFont()
-        #     font.setPixelSize(self.penWidth)
-        #     label_movieNames[i].setFont(font)
-
-
-        #     # 获取字符串占像素大小
-        #     fontMetrics = QFontMetrics(font)
-        #     titleNameSize = fontMetrics.boundingRect(self.movieList[movieId]["title"]).width()
-    
-        #     if titleNameSize > label_movieNames[i].width():
-        #         label_movieNames[i].setText (fontMetrics.elidedText(self.movieList[movieId]["title"], 
-        #         Qt.ElideRight, label_movieNames[i].width()))
-            
-        #     # label_movieNames[i].setAlignment(Qt.AlignCenter)
-            
-        #     # a = QLabel()
-        #     # label_movieLabels[i]
-        #     movieListLayout.addWidget(label_movieLabels[i], 2 * it_i, it_j, 1, 1)
-        #     movieListLayout.addWidget(label_movieNames[i], 2 * it_i + 1, it_j, 1, 1)
-        #     i += 1; it_j += 1
-        #     if it_j > 2 :
-        #         it_i += 1
-        #         it_j = 0
-
 
 
         # movieListWidget.setLayout(movieListLayout)
@@ -333,16 +168,14 @@ class mainWindow(QMainWindow):
         self.dock_movieList.setWidget(movieListWidget)
 
 
+    def updateMovieListWidget(self):
         # self.movieList.pop(1)        
         # self.movieList.pop(3)        
         # self.movieList.pop(2)        
-        # movieListWidget = self.addMovieWidget()
-        # self.dock_movieList.setWidget(movieListWidget)
+        movieListWidget = self.addMovieWidget()
+        self.dock_movieList.setWidget(movieListWidget)
 
 
-        # scrollArea.setWidget(movieListWidget)
-        # self.dock_movieList.setWidget(scrollArea)
-        # self.repaint()
 
     def init(self):
         self.setWindowTitle('Movie Collection')
@@ -376,8 +209,8 @@ class mainWindow(QMainWindow):
             font = QFont()
             font.setPixelSize(25)
             item.setFont(font)
-
             listwidget.addItem(item)
+        listwidget.itemClicked.connect(self.searchMovieWithTag)
         return listwidget
 
 
@@ -395,12 +228,22 @@ class mainWindow(QMainWindow):
             font = QFont()
             font.setPixelSize(25)
             item.setFont(font)
-
             # item.setSizeHint(QSize(item.sizeHint().width(), item.sizeHint().height()))
             # listwidget.insertItem(i, item)
             listwidget.addItem(item)
-
+            
+        listwidget.itemClicked.connect(self.searchMovieWithActor)
         return listwidget
+    def searchMovieWithActor(self, item):
+        print(item.text())
+        # widget = self.updateLabelsWidget()
+        # self.dock_labels.setWidget(widget)
+
+    def searchMovieWithTag(self, item):
+        print(item.text())
+        # widget = self.updateLabelsWidget()
+        # self.dock_labels.setWidget(widget)
+
 
     def addMovieWidget(self):
         listWidget = MovieListWidget(self)
@@ -434,7 +277,7 @@ class mainWindow(QMainWindow):
             # listwidget.ItemClicked.connect(movieClicked)
         return listWidget
         # self.setCentralWidget(listwidget)
-
+    
 
 class MovieListWidget(QListWidget):
     def __init__(self, parent=None):

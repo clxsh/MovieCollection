@@ -93,8 +93,8 @@ class MovieMessage(QDialog):
         # poster.load(self.message['cover_path'])
 
         posterPath = self.message['cover_path']
-        if posterPath == "":
-            posterPath = "./source/no_image.jpg"
+        if posterPath.strip() == '':
+            posterPath = "./resource/no_image.jpg"
 
         self.label_poster.setPixmap(QPixmap(posterPath))
         # label_image.resize(300, 300)
