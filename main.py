@@ -62,13 +62,14 @@ class mainWindow(QMainWindow):
         # t2 = QWidget(self.dock_labels)
         # 删除dock窗口标题
         self.dock_labels.setTitleBarWidget(QWidget())
+        self.labelsLayout = QVBoxLayout()
 
         # 滑动条区域
-        scrollArea = QScrollArea(self.dock_labels)
-        labelsWidget = QWidget(self.dock_labels)
+        # scrollArea = QScrollArea(self.dock_labels)
+        # labelsWidget = QWidget(self.dock_labels)
         # 布局
-        labelsLayout = QGridLayout()
-        labelsLayout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        # labelsLayout = QGridLayout()
+        # labelsLayout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         # 设置按钮
         self.actor_labels = [
@@ -80,82 +81,99 @@ class mainWindow(QMainWindow):
         ]
         self.labels = [
             'label1',
-            'label1',
-            'label1',
+            'label2',
+            'label3',
             'label1',
             'label1',
         ]
 
-        label_actor = QLabel(self)
+        label_actor = QLabel(self.dock_labels)
         label_actor.setText('演员:')
+        label_actor.setFixedSize(100, 40)
+        actorWidget = self.addLabelsActorWidget()
+
+        label_tag = QLabel(self.dock_labels)
+        label_tag.setText('标签：')
+        label_tag.setFixedSize(100, 40)
+
+        tagWidget = self.addLabelsTagWidget()
+
+        self.labelsLayout.addWidget(label_actor)
+        self.labelsLayout.addWidget(actorWidget)
+        self.labelsLayout.addWidget(label_tag)
+        self.labelsLayout.addWidget(tagWidget)
 
 
-        it_i = 0
-        it_j = 0
-        i = 0
+        widget = QWidget(self.dock_labels)
+        widget.setLayout(self.labelsLayout)
+        self.dock_labels.setWidget(widget)
+        # self.dock_labels.setLayout(self.labelsLayout)
+#         it_i = 0
+#         it_j = 0
+#         i = 0
 
-        label_white = QLabel(' ')
-        labelsLayout.addWidget(label_white, it_i, it_j, 1, 1)
-        it_i += 1
-        labelsLayout.addWidget(label_white, it_i, it_j, 1, 1)
-        it_i += 1
+#         label_white = QLabel(' ')
+#         labelsLayout.addWidget(label_white, it_i, it_j, 1, 1)
+#         it_i += 1
+#         labelsLayout.addWidget(label_white, it_i, it_j, 1, 1)
+#         it_i += 1
 
-        labelsLayout.addWidget(label_actor, it_i, it_j, 1, 1)
-        it_i+=1
+#         labelsLayout.addWidget(label_actor, it_i, it_j, 1, 1)
+#         it_i+=1
 
-        actorButton = []
-        for actorName in self.actor_labels:
-            actorButton.append(QPushButton(actorName, self))
+#         actorButton = []
+#         for actorName in self.actor_labels:
+#             actorButton.append(QPushButton(actorName, self))
 
-            actorButton[i].setStyleSheet("QPushButton{ font-family:'Microsoft YaHei';" +
-            "font-size:25px;color:#666666;}");
-            actorButton[i].resize(actorButton[i].sizeHint().width(), actorButton[i].sizeHint().height());
+#             actorButton[i].setStyleSheet("QPushButton{ font-family:'Microsoft YaHei';" +
+#             "font-size:25px;color:#666666;}");
+#             actorButton[i].resize(actorButton[i].sizeHint().width(), actorButton[i].sizeHint().height());
 
-            # actorButton[i].setFixedSize(100, 40)
-            actorButton[i].setFlat(True)
+#             # actorButton[i].setFixedSize(100, 40)
+#             actorButton[i].setFlat(True)
 
-            labelsLayout.addWidget(actorButton[i], it_i, it_j, 1, 1)
-            i += 1; it_j += 1
-            if(it_j > 2):
-                it_i += 1
-                it_j = 0
-        # 到下一行
-        if(it_j != 0):
-            it_j = 0
-            it_i += 1
-        label_label = QLabel('标签：')
-        labelsLayout.addWidget(label_label, it_i, it_j, 1, 1)
-        it_i += 1
+#             labelsLayout.addWidget(actorButton[i], it_i, it_j, 1, 1)
+#             i += 1; it_j += 1
+#             if(it_j > 2):
+#                 it_i += 1
+#                 it_j = 0
+#         # 到下一行
+#         if(it_j != 0):
+#             it_j = 0
+#             it_i += 1
+#         label_label = QLabel('标签：')
+#         labelsLayout.addWidget(label_label, it_i, it_j, 1, 1)
+#         it_i += 1
 
-        i = 0
-        labelsButton = []
-        for labelName in self.labels:
-            labelsButton.append(QPushButton(labelName, self))
-            labelsButton[i].setStyleSheet("QPushButton{ font-family:'Microsoft YaHei';" +
-            "font-size:25px;color:#666666;}");
-            labelsButton[i].resize(labelsButton[i].sizeHint().width(), labelsButton[i].sizeHint().height());
+#         i = 0
+#         labelsButton = []
+#         for labelName in self.labels:
+#             labelsButton.append(QPushButton(labelName, self))
+#             labelsButton[i].setStyleSheet("QPushButton{ font-family:'Microsoft YaHei';" +
+#             "font-size:25px;color:#666666;}");
+#             labelsButton[i].resize(labelsButton[i].sizeHint().width(), labelsButton[i].sizeHint().height());
 
-# button->setStyleSheet( "QPushButton{border-image: url(navigation_more_normal.png);}"
-#"QPushButton:hover{border-image: url(navigation_more_hover.png);}"
-# "QPushButton:pressed{border-image: url(on_more_pressed.png);}"）；
-            # labelsButton[i].setFixedSize(100, 40)
-            labelsButton[i].setFlat(True)
+# # button->setStyleSheet( "QPushButton{border-image: url(navigation_more_normal.png);}"
+# #"QPushButton:hover{border-image: url(navigation_more_hover.png);}"
+# # "QPushButton:pressed{border-image: url(on_more_pressed.png);}"）；
+#             # labelsButton[i].setFixedSize(100, 40)
+#             labelsButton[i].setFlat(True)
 
-            labelsLayout.addWidget(labelsButton[i], it_i, it_j, 1, 1)
-            i += 1; it_j += 1
-            if(it_j > 2):
-                it_i += 1
-                it_j = 0
-
-
+#             labelsLayout.addWidget(labelsButton[i], it_i, it_j, 1, 1)
+#             i += 1; it_j += 1
+#             if(it_j > 2):
+#                 it_i += 1
+#                 it_j = 0
 
 
-        labelsWidget.setLayout(labelsLayout)
-        # labelsWidget.setFixedWidth(300)
-        self.dock_labels.setWidget(labelsWidget)
 
-        scrollArea.setWidget(labelsWidget)
-        self.dock_labels.setWidget(scrollArea)
+
+#         labelsWidget.setLayout(labelsLayout)
+#         # labelsWidget.setFixedWidth(300)
+#         self.dock_labels.setWidget(labelsWidget)
+
+#         scrollArea.setWidget(labelsWidget)
+#         self.dock_labels.setWidget(scrollArea)
 
 
 
@@ -339,46 +357,47 @@ class mainWindow(QMainWindow):
         # ~ setCenterWindow()
 
         self.show()
-    # def addlabelsWidget(self):
-    #     listwidget = QListWidget(self)
-    #     label_actor.setText('演员:')
+
+    def addLabelsTagWidget(self):
+        listwidget = QListWidget(self.dock_labels)
+
+        # listwidget.setItemAlignment(Qt.AlignCenter)
+        # listwidget.setIconSize(QSize(30, self.regularImageHeight))
+        listwidget.setResizeMode(QListView.Adjust)
+        listwidget.setViewMode(QListView.IconMode)
+        listwidget.setMovement(QListView.Static)
+        listwidget.setSpacing(10)
+
+        for i in range(len(self.labels)):
+            item = QListWidgetItem(self.labels[i])
+            font = QFont()
+            font.setPixelSize(25)
+            item.setFont(font)
+
+            listwidget.addItem(item)
+        return listwidget
 
 
-    #     for actorName in self.actor_labels:
-    #         actorButton.append(QPushButton(actorName, self))
-    #         actorButton[i].resize(actorButton[i].sizeHint().width(), actorButton[i].sizeHint().height());
+    def addLabelsActorWidget(self):
+        listwidget = QListWidget(self.dock_labels)
 
-    #     for labelName in self.labels:
-    #         labelsButton.append(QPushButton(labelName, self))
-    #         labelsButton[i].setStyleSheet("QPushButton{ font-family:'Microsoft YaHei';" +
-    #         "font-size:25px;color:#666666;}");
-    #         labelsButton[i].resize(labelsButton[i].sizeHint().width(), labelsButton[i].sizeHint().height());
+        # listwidget.setItemAlignment(Qt.AlignCenter)
+        # listwidget.setIconSize(QSize(30, self.regularImageHeight))
+        listwidget.setResizeMode(QListView.Adjust)
+        listwidget.setViewMode(QListView.IconMode)
+        listwidget.setMovement(QListView.Static)
+        listwidget.setSpacing(10)
+        for i in range(len(self.actor_labels)):
+            item = QListWidgetItem(self.actor_labels[i])
+            font = QFont()
+            font.setPixelSize(25)
+            item.setFont(font)
 
-    #         labelsButton[i].setFlat(True)
-    #         labelsLayout.addWidget(labelsButton[i], it_i, it_j, 1, 1)
+            # item.setSizeHint(QSize(item.sizeHint().width(), item.sizeHint().height()))
+            # listwidget.insertItem(i, item)
+            listwidget.addItem(item)
 
-    #     # listwidget.setItemAlignment(Qt.AlignCenter)
-    #     listwidget.setIconSize(QSize(self.regularImageWidth, self.regularImageHeight))
-    #     listwidget.setResizeMode(QListView.Adjust)
-    #     listwidget.setViewMode(QListView.IconMode)
-    #     listwidget.setMovement(QListView.Static)
-    #     listwidget.setSpacing(10)
-
-    #     for i in self.actor_labels.keys():
-    #         item = QListWidgetItem(self.actor_labels[i])
-    #         font = QFont()
-    #         font.setPixelSize(25)
-    #         item.setFont(font)
-    #         item.index = i
-
-    #         item.setSizeHint(QSize(self.regularImageWidth, self.regularImageHeight+25))
-    #         # listwidget.insertItem(i, item)
-    #         listwidget.addItem(item)
-    #     listwidget.itemClicked.connect(listwidget.movieClicked)
-    #     listwidget.itemDoubleClicked.connect(listwidget.movieDoubleClicked)
-    #         # item.clicked.connect(self.movieClicked)
-    #         # listwidget.ItemClicked.connect(movieClicked)
-    #     return listwidget
+        return listwidget
 
     def addMovieWidget(self):
         listWidget = MovieListWidget(self)
