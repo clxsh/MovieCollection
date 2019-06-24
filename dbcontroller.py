@@ -1,5 +1,7 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+import os
+
 from models import Actress, Tag, Movie
 
 sql_address = "sqlite:///sqlite.db"
@@ -40,8 +42,12 @@ def addtodb(movie_detail):
 def query_movie(actress = None, tag=None):
     session = Session()
 
+    movies = {}
     if actress is not None:
-        movies = session.query(Actress).filter_by(name=actress).first().movies
+        actress = session.query(Actress).filter_by(name=actress).first()
+        if actress is not None:
+            movies = actress.movies            
+
 
     elif tag is not None:
         movies = session.query(Tag).filter_by(text=tag).first().movies
@@ -61,6 +67,25 @@ def query_movie(actress = None, tag=None):
         movie_dict[movie.id] = movie_detail
 
     return movie_dict
+
+
+def query_actress():
+    session = Session()
+
+    actresses = session.query(Actress).all()
+    actress_list = [actress.name for actress in actresses if actress.name != ""]
+    actress_list.append("未知姓名")
+
+    return actress_list
+
+
+def query_tag():
+    session = Session()
+
+    tags = session.query(Tag).all()
+    tag_list = [tag.text for tag in tags]
+
+    return tag_list
 
 
 def create_db():

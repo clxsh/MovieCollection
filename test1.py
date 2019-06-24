@@ -1,8 +1,4 @@
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-import PyQt5
-import sys
+from dirwallthrough import addtonfo, delfromnfo, alter_tag, MType
 
-def Test():
-    print("dfgads")
+
+alter_tag(MType.DEL, 1, "testADD")

@@ -1,11 +1,13 @@
 import os
+from enum import Enum
 import xml.etree.ElementTree as etree
 
-from dbcontroller import addtodb
+from dbcontroller import addtodb, Session
+from models import Tag, Movie
 # 存在.nfo文件 and 存在视频文件
 # or 只存在视频文件
 
-video_ext = [".mkv", ".mp4", ".wmv"]
+video_ext = [".mkv", ".mp4", ".wmv", ".avi"]
 
 
 # dict{title:, actress:, tags:, video_path:, cover_path:}
@@ -21,6 +23,7 @@ def walkthrough(path):
                 if os.path.isfile(nfo_path):
                     movie_detail = parse_nfo(nfo_path)
                 else:
+                    create_nfo(nfo_path)
                     movie_detail["actress"] = ""
                     movie_detail["tags"] = []
 
@@ -43,6 +46,85 @@ def parse_nfo(filepath):
     tree = etree.parse(filepath)
 
     actress = tree.find("actor")[0].text
+    if actress is not None:
+        actress = actress.strip()
+    if actress == None:
+        actress = ""
     tags = [tag.text for tag in tree.findall("tag")]
 
     return {"actress": actress, "tags": tags}
+
+
+def create_nfo(nfopath):
+    movie = etree.Element("movie")
+    actor = etree.SubElement(movie, "actor")
+    name = etree.SubElement(actor, "name")
+    name.text = ""
+
+    tree = etree.ElementTree(movie)
+    tree.write(nfopath, "UTF-8")
+
+
+def addtonfo(nfopath, tagtext):
+    tree = etree.parse(nfopath)
+    root = tree.getroot()
+
+    tags = [tag.text for tag in tree.findall("tag")]
+    if tagtext not in tags:
+        element = etree.Element("tag")
+        element.text = tagtext
+
+        root.append(element)
+        tree.write(nfopath, "UTF-8")
+    
+
+
+def delfromnfo(nfopath, tagtext):
+    tree = etree.parse(nfopath)
+    root = tree.getroot()
+
+    for tag in tree.findall("tag"):
+        if tag.text == tagtext:
+            root.remove(tag)
+            tree.write(nfopath, "UTF-8")
+            return
+
+
+class MType(Enum):
+    ADD = 0
+    DEL = 1
+
+"""
+type: manipulate type(add a tag or del a tag from a movie)
+movie_id: as name suggests
+tagtext: the tag to manipulate
+"""
+def alter_tag(type, movie_id, tagtext):
+    session = Session()
+    # tags表中存在与否， 添加到movie表中， 添加到.nfo
+    if type == MType.ADD:
+        tag = session.query(Tag).filter_by(text=tagtext).first()
+        if tag is None:
+            tag = Tag(text=tagtext)
+            session.add(tag)
+
+        movie = session.query(Movie).filter_by(id=movie_id).first()
+        if tag not in movie.tags:
+            movie.tags.append(tag)
+            session.add(movie)
+
+            session.commit()
+
+        addtonfo(os.path.join(os.path.dirname(movie.video_path), movie.title + ".nfo"), tagtext)
+    
+    # 从movies表中删除关系，自.nfo文件删除
+    if type == MType.DEL:
+        tag = session.query(Tag).filter_by(text=tagtext).first()
+        movie = session.query(Movie).filter_by(id=movie_id).first()
+        movie.tags.remove(tag)
+
+        session.add(movie)
+        session.commit()
+
+        delfromnfo(os.path.join(os.path.dirname(movie.video_path), movie.title + ".nfo"), tagtext)
+        
