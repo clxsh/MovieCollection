@@ -5,11 +5,13 @@ from PyQt5.QtCore import *
 import PyQt5
 import sys
 import os
+import datetime
 
-from dbcontroller import query_movie
+from dbcontroller import query_movie, query_tag, query_actress, create_db
 from ImageLabel import ImageLabel
 from MovieMessage import MovieMessage
 from TitleLabel import TitleLabel
+from dirwallthrough import walkthrough
 #import test1
 
 # listWidget 是视频列表， labelWidget是标签页面
@@ -25,6 +27,23 @@ class mainWindow(QMainWindow):
         icon = QIcon()
         icon.addPixmap(QPixmap("./resource/icon.ico"), QIcon.Normal, QIcon.Off)
         self.setWindowIcon(icon)
+
+        bar = self.menuBar()
+        file = bar.addMenu("文件")
+        adddir = QAction("添加文件夹", self)
+        file.addAction(adddir)
+        initdb = QAction("初始化", self)
+        file.addAction(initdb)
+        act_quit = QAction("退出", self)
+        file.addAction(act_quit)
+        others = bar.addMenu("其他")
+        allv = QAction("所有影片", self)
+        others.addAction(allv)
+
+        adddir.triggered.connect(self.addDir)
+        initdb.triggered.connect(self.initdb)
+        act_quit.triggered.connect(self.process_quit)
+        allv.triggered.connect(self.allVideo)
         #去掉标题栏,去掉任务栏显示，窗口置顶  Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint  Tool
         # self.setWindowFlags(Qt.Tool)
         # self.menuBar.hide()
@@ -51,6 +70,43 @@ class mainWindow(QMainWindow):
         self.splitDockWidget(self.dock_labels, self.dock_movieList, Qt.Horizontal)
         # self.splitDockWidget(self.dock_movieList, self.dock_labels, Qt.Horizontal)
 
+    def delListWidgetItems(self, listWidget):
+        for i in reversed(range(listWidget.count())):
+            listWidget.takeItem(0)
+
+
+    def allVideo(self):
+
+        self.delListWidgetItems(self.movieListWidget)
+        del self.movieList
+        self.movieList = query_movie()
+        self.updateMovieListWidget()
+
+    def process_quit(self):
+        quit()
+
+    def initdb(self):
+        create_db()
+        self.updateLabelsWidget()
+
+        self.delListWidgetItems(self.movieListWidget)
+        del self.movieList
+        self.movieList = query_movie()
+        self.updateMovieListWidget()
+
+    def addDir(self):
+        dlg = QFileDialog()
+        dlg.setFileMode(QFileDialog.Directory)
+
+        directory = dlg.getExistingDirectory()
+        walkthrough(directory)
+        self.updateLabelsWidget()
+
+        self.delListWidgetItems(self.movieListWidget)
+        del self.movieList
+        self.movieList = query_movie()
+        self.updateMovieListWidget()
+
 
     def WinMovieMessage(self):
         self.win_message = MovieMessage()
@@ -66,37 +122,12 @@ class mainWindow(QMainWindow):
         self.dock_labels.setTitleBarWidget(QWidget())
 
         # 设置按钮
-        self.actor_labels = [
-            'actorName1',
-            'actorName2',
-            'actorName3',
-            'actorName3',
-            'actorName3',
-        ]
-        self.labels = [
-            'label1',
-            'label2',
-            'label3',
-            'label1',
-            'label1',
-        ]
 
-        widget = self.updateLabelsWidget()
-        self.dock_labels.setWidget(widget)
+        self.updateLabelsWidget()
 
-        # self.actor_labels.pop()
-        # self.actor_labels.pop()
-        # widget = self.updateLabelsWidget()
-        # self.dock_labels.setWidget(widget)
-
-
-#         labelsWidget.setLayout(labelsLayout)
-#         # labelsWidget.setFixedWidth(300)
-#         self.dock_labels.setWidget(labelsWidget)
-
-#         scrollArea.setWidget(labelsWidget)
-#         self.dock_labels.setWidget(scrollArea)
     def updateLabelsWidget(self):
+        self.tags = query_tag()
+        self.actor_labels = query_actress()
 
         labelsLayout = QVBoxLayout()
 
@@ -122,7 +153,7 @@ class mainWindow(QMainWindow):
 
         widget = QWidget(self.dock_labels)
         widget.setLayout(labelsLayout)
-        return widget
+        self.dock_labels.setWidget(widget)
 
 
 
@@ -156,24 +187,23 @@ class mainWindow(QMainWindow):
         # 布局
         # movieListLayout = QGridLayout()
         # movieListLayout = QVBoxLayout(self.dock_movieList)
-        movieListLayout = QVBoxLayout()
-        movieListLayout.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        # movieListLayout = QVBoxLayout()
+        # movieListLayout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
 
         # movieListWidget.setLayout(movieListLayout)
         # # movieListWidget.setFixedWidth(1000)
         # movieListWidget.adjustSize()
-        movieListWidget = self.addMovieWidget()
-        movieListLayout.addWidget(movieListWidget)
-        self.dock_movieList.setWidget(movieListWidget)
+        
+        # movieListLayout.addWidget(movieListWidget)
+
+        self.movieListWidget = self.addMovieWidget()
+        self.dock_movieList.setWidget(self.movieListWidget)
 
 
     def updateMovieListWidget(self):
-        # self.movieList.pop(1)        
-        # self.movieList.pop(3)        
-        # self.movieList.pop(2)        
-        movieListWidget = self.addMovieWidget()
-        self.dock_movieList.setWidget(movieListWidget)
+        self.movieListWidget = self.addMovieWidget()
+        self.dock_movieList.setWidget(self.movieListWidget)
 
 
 
@@ -181,8 +211,8 @@ class mainWindow(QMainWindow):
         self.setWindowTitle('Movie Collection')
         width = QApplication.desktop().width()
         height = QApplication.desktop().height()
-        self.move(int(width * 0.05), int(height * 0.01) )
-        self.resize(int(width * 0.8), int(height * 0.8) )
+        # self.move(int(width * 0.05), int(height * 0.01) )
+        # self.resize(int(width ), int(height ) )
 
         self.penWidth = 25
         self.regularImageWidth = 330
@@ -190,9 +220,8 @@ class mainWindow(QMainWindow):
         self.fontStyle = "{ font-family:'Microsoft YaHei';" + "font-size:25px;color:#666666;}"
 
         self.CreateLayout()
-        # ~ setCenterWindow()
 
-        self.show()
+        # self.show()
 
     def addLabelsTagWidget(self):
         listwidget = QListWidget(self.dock_labels)
@@ -204,8 +233,8 @@ class mainWindow(QMainWindow):
         listwidget.setMovement(QListView.Static)
         listwidget.setSpacing(10)
 
-        for i in range(len(self.labels)):
-            item = QListWidgetItem(self.labels[i])
+        for i in range(len(self.tags)):
+            item = QListWidgetItem(self.tags[i])
             font = QFont()
             font.setPixelSize(25)
             item.setFont(font)
@@ -235,14 +264,23 @@ class mainWindow(QMainWindow):
         listwidget.itemClicked.connect(self.searchMovieWithActor)
         return listwidget
     def searchMovieWithActor(self, item):
-        print(item.text())
-        # widget = self.updateLabelsWidget()
-        # self.dock_labels.setWidget(widget)
+        text = item.text()
+        if text == "未知姓名":
+            searchtext = ""
+        else:
+            searchtext = text
+
+        self.delListWidgetItems(self.movieListWidget)
+        del self.movieList
+        self.movieList = query_movie(actress=searchtext)
+        self.updateMovieListWidget()
 
     def searchMovieWithTag(self, item):
-        print(item.text())
-        # widget = self.updateLabelsWidget()
-        # self.dock_labels.setWidget(widget)
+        self.delListWidgetItems(self.movieListWidget)
+        self.movieListWidget.deleteLater()
+        del self.movieList
+        self.movieList = query_movie(tag=item.text())
+        self.updateMovieListWidget()
 
 
     def addMovieWidget(self):
@@ -253,7 +291,7 @@ class mainWindow(QMainWindow):
         listWidget.setResizeMode(QListView.Adjust)
         listWidget.setViewMode(QListView.IconMode)
         listWidget.setMovement(QListView.Static)
-        listWidget.setSpacing(10)
+        listWidget.setSpacing(30)
 
         for i in self.movieList.keys():
             posterPath = self.movieList[i]['cover_path']
@@ -267,7 +305,7 @@ class mainWindow(QMainWindow):
             font.setPixelSize(25)
             item.setFont(font)
             item.index = i
-            item.setSizeHint(QSize(self.regularImageWidth, self.regularImageHeight+25))
+            item.setSizeHint(QSize(self.regularImageWidth, self.regularImageHeight+30))
             # listWidget.insertItem(i, item)
             listWidget.addItem(item)
         # listWidget.itemClicked.connect(listWidget.movieClicked)
@@ -298,7 +336,9 @@ class MovieListWidget(QListWidget):
         self.I_mainWindow.win_message = MovieMessage()
         self.I_mainWindow.win_message.setI_mainWindow(self.I_mainWindow)
         self.I_mainWindow.win_message.resize(700, 800)
+        self.I_mainWindow.win_message.setIndex(item.index)
         self.I_mainWindow.win_message.setMessage(self.I_mainWindow.movieList[item.index])
+
 
         self.I_mainWindow.win_message.exec_()
         self.timer.timeout.disconnect()
@@ -310,12 +350,13 @@ class MovieListWidget(QListWidget):
         self.timer.stop()
         self.timer.timeout.disconnect()
 
-
         videoPath = self.I_mainWindow.movieList[item.index]['video_path']
-        print(item.text())
+        cmd = ("PotPlayerMini64.exe " + videoPath)
+        os.popen(cmd)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     uiSystem = mainWindow()
     #test1.Test()
+    uiSystem.showMaximized()
     sys.exit(app.exec_())

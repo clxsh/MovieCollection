@@ -7,7 +7,7 @@ from models import Tag, Movie
 # 存在.nfo文件 and 存在视频文件
 # or 只存在视频文件
 
-video_ext = [".mkv", ".mp4", ".wmv"]
+video_ext = [".mkv", ".mp4", ".wmv", ".avi"]
 
 
 # dict{title:, actress:, tags:, video_path:, cover_path:}
@@ -46,6 +46,8 @@ def parse_nfo(filepath):
     tree = etree.parse(filepath)
 
     actress = tree.find("actor")[0].text
+    if actress is not None:
+        actress = actress.strip()
     if actress == None:
         actress = ""
     tags = [tag.text for tag in tree.findall("tag")]

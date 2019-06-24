@@ -42,8 +42,12 @@ def addtodb(movie_detail):
 def query_movie(actress = None, tag=None):
     session = Session()
 
+    movies = {}
     if actress is not None:
-        movies = session.query(Actress).filter_by(name=actress).first().movies
+        actress = session.query(Actress).filter_by(name=actress).first()
+        if actress is not None:
+            movies = actress.movies            
+
 
     elif tag is not None:
         movies = session.query(Tag).filter_by(text=tag).first().movies

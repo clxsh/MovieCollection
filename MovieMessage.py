@@ -5,6 +5,8 @@ from PyQt5.QtCore import *
 import PyQt5
 import sys
 
+from dirwallthrough import alter_tag, MType
+
 class MovieMessage(QDialog):
     def __init__(self, parent=None):
         super(MovieMessage, self).__init__(parent)
@@ -14,7 +16,8 @@ class MovieMessage(QDialog):
         self.buttonWidget = QWidget()
         self.label_poster = QLabel()
         self.t = 1
-
+    def setIndex(self, index):
+        self.index = index
     def setMessage(self, message):
         # self.message = self.I_mainWindow.movieList[index]
         # print(self.message)
@@ -56,7 +59,7 @@ class MovieMessage(QDialog):
         self.fontStyle = "{ font-family:'Microsoft YaHei';" + \
             "font-size:25px;color:#666666;}"
 # Qt.FramelessWindowHint | Qt.WindowMinimizeButtonHint |
-        self.setWindowFlags( Qt.WindowStaysOnTopHint)
+        self.setWindowFlags(Qt.WindowCloseButtonHint | Qt.MSWindowsFixedSizeDialogHint)
         self.setWindowTitle('影片信息')
         self.setAutoFillBackground(True)
 #         QPalette palette;
@@ -110,7 +113,7 @@ class MovieMessage(QDialog):
         label_title.setStyleSheet(fontStyle1)
 
         self.label_titleName = QLabel(self.buttonWidget)
-        self.label_titleName.setText(self.message['title'])
+        self.label_titleName.setText(self.message['title'][:25] + "...")
         self.label_titleName.setStyleSheet(fontStyle1)
 
 
@@ -192,7 +195,13 @@ class MovieMessage(QDialog):
         # self.label_tagsName.append(self.lineEdit.text() + ', ')
         if self.lineEdit.text().strip(' ') == '':
             return
-        self.label_tagsName.insertPlainText(self.lineEdit.text().strip(' ') + ', ')
+
+        tagtext = self.lineEdit.text().strip()
+        self.label_tagsName.insertPlainText(tagtext + ', ')
+
+        alter_tag(MType.ADD, self.index, tagtext)
+        self.I_mainWindow.updateLabelsWidget()
+
     def setI_mainWindow(self, mainWin):
         self.I_mainWindow = mainWin
         self.regularImageWidth = self.I_mainWindow.regularImageWidth
