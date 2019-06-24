@@ -4,6 +4,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 import PyQt5
 import sys
+import os
 from dbcontroller import query_movie
 
 from ImageLabel import ImageLabel
@@ -204,12 +205,13 @@ class mainWindow(QMainWindow):
         self.dock_movieList.setTitleBarWidget(QWidget())
 
         # 滑动条区域
-        scrollArea = QScrollArea(self.dock_movieList)
-        movieListWidget = QWidget(self.dock_movieList)
+        # scrollArea = QScrollArea(self.dock_movieList)
+        # movieListWidget = QWidget(self.dock_movieList)
 
 
         # 布局
-        movieListLayout = QGridLayout()
+        # movieListLayout = QGridLayout()
+        movieListLayout = QVBoxLayout(self.dock_movieList)
         movieListLayout.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
         # movieListLayout.setContentsMargins(30,30,30,0)
@@ -237,99 +239,101 @@ class mainWindow(QMainWindow):
 
 
         # 参数是 movieList
-        movieImage = []
-        label_movieLabels = []
-        label_movieNames = []
-        # self.movieLabelGroup = QButtonGroup()
-        # movieName = []
-        i = 0
-        it_i = 0
-        it_j = 0
+        # movieImage = []
+        # label_movieLabels = []
+        # label_movieNames = []
+        # # self.movieLabelGroup = QButtonGroup()
+        # # movieName = []
+        # i = 0
+        # it_i = 0
+        # it_j = 0
 
-        for movieId in self.movieList.keys():
-            # print(movieName)
-            # movieImg = QImage(300, 300, QImage.Format_RGB888)
-            # movieImg.load(self.movieList[movieName]['movieImagePath'])
-            a = QImage(500, 500, QImage.Format_RGB888)
-            movieImage.append (a)
+        # for movieId in self.movieList.keys():
+        #     # print(movieName)
+        #     # movieImg = QImage(300, 300, QImage.Format_RGB888)
+        #     # movieImg.load(self.movieList[movieName]['movieImagePath'])
+        #     a = QImage(500, 500, QImage.Format_RGB888)
+        #     movieImage.append (a)
 
-            posterPath = self.movieList[movieId]["cover_path"]
-            if posterPath == "":
-                posterPath = "./source/no_image.jpg"
+        #     posterPath = self.movieList[movieId]["cover_path"]
+        #     if posterPath == "":
+        #         posterPath = "./source/no_image.jpg"
 
-            movieImage[i].load(posterPath)
-            # movieImage[i].scaled((int)(movieImage[i].width() * 0.3),
-            # (int)(movieImage[i].height() * 0.3))
-            labelMovie = ImageLabel(movieListWidget)
-            labelMovie.setI_mainWindow(self)
-            # labelMovie.resize((int)(movieImage[i].width() * 0.3),
-            # (int)(movieImage[i].height() * 0.3))
-
-
-            labelMovie.setPixmap(QPixmap.fromImage(movieImage[i]))
-            labelMovie.setVideoPath(self.movieList[movieId]['video_path'])
-
-            label_movieLabels.append(labelMovie)
-            label_movieLabels[i].setAlignment(Qt.AlignmentFlag.AlignCenter)
-
-            label_movieLabels[i].setScaledContents(True)
-            label_movieLabels[i].setPixmap(QPixmap.fromImage(movieImage[i]))
-            # label_movieLabels[i].resize(movieImage[i].width(), movieImage[i].height());
-            # labelMovie.setFixedSize((int)(movieImage[i].width() * 0.6),
-            # (int)(movieImage[i].height() * 0.6))
-            labelMovie.setFixedSize(self.regularImageWidth, self.regularImageHeight)
+        #     movieImage[i].load(posterPath)
+        #     # movieImage[i].scaled((int)(movieImage[i].width() * 0.3),
+        #     # (int)(movieImage[i].height() * 0.3))
+        #     labelMovie = ImageLabel(movieListWidget)
+        #     labelMovie.setI_mainWindow(self)
+        #     # labelMovie.resize((int)(movieImage[i].width() * 0.3),
+        #     # (int)(movieImage[i].height() * 0.3))
 
 
+        #     labelMovie.setPixmap(QPixmap.fromImage(movieImage[i]))
+        #     labelMovie.setVideoPath(self.movieList[movieId]['video_path'])
 
-            # label_movieName = QLabel(movieListWidget)
-            # label_movieName.setText(movieName)
-            # label_movieName.setAlignment(Qt.AlignCenter)
-            label_movieNames.append (TitleLabel(movieListWidget))
-            label_movieNames[i].setI_mainWindow(self)
-            label_movieNames[i].setIndex(i)
+        #     label_movieLabels.append(labelMovie)
+        #     label_movieLabels[i].setAlignment(Qt.AlignmentFlag.AlignCenter)
+
+        #     label_movieLabels[i].setScaledContents(True)
+        #     label_movieLabels[i].setPixmap(QPixmap.fromImage(movieImage[i]))
+        #     # label_movieLabels[i].resize(movieImage[i].width(), movieImage[i].height());
+        #     # labelMovie.setFixedSize((int)(movieImage[i].width() * 0.6),
+        #     # (int)(movieImage[i].height() * 0.6))
+        #     labelMovie.setFixedSize(self.regularImageWidth, self.regularImageHeight)
+
+
+
+        #     # label_movieName = QLabel(movieListWidget)
+        #     # label_movieName.setText(movieName)
+        #     # label_movieName.setAlignment(Qt.AlignCenter)
+        #     label_movieNames.append (TitleLabel(movieListWidget))
+        #     label_movieNames[i].setI_mainWindow(self)
+        #     label_movieNames[i].setIndex(i)
             
-            # label_movieNames[i].setMessage
+        #     # label_movieNames[i].setMessage
 
-            label_movieNames[i].setText(self.movieList[movieId]["title"])
-            label_movieNames[i].setFixedWidth(self.regularImageWidth)
+        #     label_movieNames[i].setText(self.movieList[movieId]["title"])
+        #     label_movieNames[i].setFixedWidth(self.regularImageWidth)
 
             
-            # 设置影片名的样式，字体大小，长短
-            font = QFont()
-            font.setPixelSize(self.penWidth)
-            label_movieNames[i].setFont(font)
+        #     # 设置影片名的样式，字体大小，长短
+        #     font = QFont()
+        #     font.setPixelSize(self.penWidth)
+        #     label_movieNames[i].setFont(font)
 
 
-            # 获取字符串占像素大小
-            fontMetrics = QFontMetrics(font)
-            titleNameSize = fontMetrics.boundingRect(self.movieList[movieId]["title"]).width()
+        #     # 获取字符串占像素大小
+        #     fontMetrics = QFontMetrics(font)
+        #     titleNameSize = fontMetrics.boundingRect(self.movieList[movieId]["title"]).width()
     
-            if titleNameSize > label_movieNames[i].width():
-                label_movieNames[i].setText (fontMetrics.elidedText(self.movieList[movieId]["title"], 
-                Qt.ElideRight, label_movieNames[i].width()))
+        #     if titleNameSize > label_movieNames[i].width():
+        #         label_movieNames[i].setText (fontMetrics.elidedText(self.movieList[movieId]["title"], 
+        #         Qt.ElideRight, label_movieNames[i].width()))
             
-            # label_movieNames[i].setAlignment(Qt.AlignCenter)
+        #     # label_movieNames[i].setAlignment(Qt.AlignCenter)
             
-            # a = QLabel()
-            # label_movieLabels[i]
-            movieListLayout.addWidget(label_movieLabels[i], 2 * it_i, it_j, 1, 1)
-            movieListLayout.addWidget(label_movieNames[i], 2 * it_i + 1, it_j, 1, 1)
-            i += 1; it_j += 1
-            if it_j > 2 :
-                it_i += 1
-                it_j = 0
+        #     # a = QLabel()
+        #     # label_movieLabels[i]
+        #     movieListLayout.addWidget(label_movieLabels[i], 2 * it_i, it_j, 1, 1)
+        #     movieListLayout.addWidget(label_movieNames[i], 2 * it_i + 1, it_j, 1, 1)
+        #     i += 1; it_j += 1
+        #     if it_j > 2 :
+        #         it_i += 1
+        #         it_j = 0
 
 
 
-        movieListWidget.setLayout(movieListLayout)
-        # movieListWidget.setFixedWidth(1000)
-        movieListWidget.adjustSize()
-        
+        # movieListWidget.setLayout(movieListLayout)
+        # # movieListWidget.setFixedWidth(1000)
+        # movieListWidget.adjustSize()
+        movieListWidget = self.addMovieWidget()
+        movieListLayout.addWidget(movieListWidget)
         self.dock_movieList.setWidget(movieListWidget)
+        # self.dock_movieList.setLayout(movieListLayout)
 
-        scrollArea.setWidget(movieListWidget)
-        self.dock_movieList.setWidget(scrollArea)
-        self.repaint()
+        # scrollArea.setWidget(movieListWidget)
+        # self.dock_movieList.setWidget(scrollArea)
+        # self.repaint()
 
     def init(self):
         self.setWindowTitle('video play')
@@ -347,6 +351,50 @@ class mainWindow(QMainWindow):
         # ~ setCenterWindow()
 
         self.show()
+
+    def addMovieWidget(self):
+        listwidget = ListWidget(self)
+        # listwidget.setItemAlignment(Qt.AlignCenter)
+        listwidget.setIconSize(QSize(self.regularImageWidth, self.regularImageHeight))
+        listwidget.setResizeMode(QListView.Adjust)
+        listwidget.setViewMode(QListView.IconMode)
+        listwidget.setMovement(QListView.Static)
+        listwidget.setSpacing(10)
+
+        for i in self.movieList.keys():
+            posterPath = self.movieList[i]['cover_path']
+            if posterPath == "":
+                posterPath = "./source/no_image.jpg"
+            pm = QPixmap(posterPath)
+
+            item = QListWidgetItem(QIcon(pm.scaled(QSize(self.regularImageWidth, self.regularImageHeight))), self.movieList[i]['title'])
+            # item = QListWidgetItem("test")
+            font = QFont()
+            font.setPixelSize(25)
+            item.setFont(font)
+            # print(item.text())
+            item.setSizeHint(QSize(self.regularImageWidth, self.regularImageHeight+25))
+            # listwidget.insertItem(i, item)
+            listwidget.addItem(item)
+            listwidget.itemPressed.connect(listwidget.movieClicked)
+            
+            # item.clicked.connect(self.movieClicked)
+            # listwidget.ItemClicked.connect(movieClicked)
+        return listwidget
+        # self.setCentralWidget(listwidget)
+
+class ListWidget(QListWidget):
+    # def __init__(self, parent=None):
+        # super(ListWidget, self).__init__(parent)
+        # self.i = 0
+        # self.setMessage()
+
+    def movieClicked(self, item):
+        print(item.text())
+        # self.i+=1
+        # print(self.i)
+        # cmd = ("PotPlayerMini64.exe " + self.movieList[1]['video_path'])
+        # os.popen(cmd)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
