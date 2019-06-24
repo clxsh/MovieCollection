@@ -5,8 +5,8 @@ from PyQt5.QtCore import *
 import PyQt5
 import sys
 import os
-from dbcontroller import query_movie
 
+from dbcontroller import query_movie
 from ImageLabel import ImageLabel
 from MovieMessage import MovieMessage
 from TitleLabel import TitleLabel
@@ -22,6 +22,9 @@ class mainWindow(QMainWindow):
     def CreateLayout(self):
         # 允许嵌套
         self.setDockNestingEnabled(True)
+        icon = QIcon()
+        icon.addPixmap(QPixmap("./resource/icon.ico"), QIcon.Normal, QIcon.Off)
+        self.setWindowIcon(icon)
         #去掉标题栏,去掉任务栏显示，窗口置顶  Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint  Tool
         # self.setWindowFlags(Qt.Tool)
         # self.menuBar.hide()
@@ -342,7 +345,7 @@ class mainWindow(QMainWindow):
         # self.repaint()
 
     def init(self):
-        self.setWindowTitle('video play')
+        self.setWindowTitle('Movie Collection')
         width = QApplication.desktop().width()
         height = QApplication.desktop().height()
         self.move(int(width * 0.05), int(height * 0.01) )
@@ -412,7 +415,7 @@ class mainWindow(QMainWindow):
         for i in self.movieList.keys():
             posterPath = self.movieList[i]['cover_path']
             if posterPath == "":
-                posterPath = "./source/no_image.jpg"
+                posterPath = "./resource/no_image.jpg"
             pm = QPixmap(posterPath)
 
             item = QListWidgetItem(QIcon(pm.scaled(QSize(self.regularImageWidth, self.regularImageHeight))), self.movieList[i]['title'])
