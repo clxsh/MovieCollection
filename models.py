@@ -9,7 +9,7 @@ class Actress(Base):
     __tablename__ = "actresses"
 
     id = Column(Integer, primary_key=True)
-    name = Column(String, unique=True)
+    name = Column(String, unique=True, nullable=False)
     movies = relationship("Movie", back_populates="actress") # movies  back_populates from Movie
 
     def __repr__(self):

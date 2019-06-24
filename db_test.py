@@ -2,7 +2,7 @@ import sys
 
 from dirwallthrough import walkthrough
 from models import Actress, Movie, Tag
-from dbcontroller import Session, create_db, query_movie
+from dbcontroller import Session, create_db, query_movie, query_actress, query_tag
 
 path = "./video_test_dir"
 
@@ -33,3 +33,6 @@ if __name__ == "__main__":
     # query_result = query_movie()
     # for id in query_result.keys():
     #     print(query_result[id])
+    print(query_actress())
+    print(query_tag())
+    print(query_movie(actress=""))
