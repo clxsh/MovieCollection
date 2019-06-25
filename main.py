@@ -5,7 +5,7 @@ from PyQt5.QtCore import *
 import PyQt5
 import sys
 import os
-import datetime
+import time
 
 from dbcontroller import query_movie, query_tag, query_actress, create_db
 from ImageLabel import ImageLabel
@@ -76,11 +76,17 @@ class mainWindow(QMainWindow):
 
 
     def allVideo(self):
-
         self.delListWidgetItems(self.movieListWidget)
         del self.movieList
+
+        beforetime = time.time()
+        print("before query: " + str(time.time()))
         self.movieList = query_movie()
+        print("after query before update: " + str(time.time()))
         self.updateMovieListWidget()
+        print("after update: " + str(time.time()))
+        aftertime = time.time()
+
 
     def process_quit(self):
         quit()
@@ -197,14 +203,24 @@ class mainWindow(QMainWindow):
         
         # movieListLayout.addWidget(movieListWidget)
 
-        self.movieListWidget = self.addMovieWidget()
-        self.dock_movieList.setWidget(self.movieListWidget)
+        # self.movieListWidget = self.addMovieWidget()
+        # self.dock_movieList.setWidget(self.movieListWidget)
+        self.updateMovieListWidget()
 
 
     def updateMovieListWidget(self):
+        # print("before add widget: " + str(time.time()))
+            # self.thread = LoadMovieListWidget(self.movieList)
+            # self.thread.start()
+            # self.thread.trigger.connect(self.process_thread)
         self.movieListWidget = self.addMovieWidget()
+        # print("after add before set: " + str(time.time()))
         self.dock_movieList.setWidget(self.movieListWidget)
+        # print("after set: " + str(time.time()))
 
+    # def process_thread(self, listWidget):
+    #     self.movieListWidget = listWidget
+    #     self.dock_movieList.setWidget(self.movieListWidget)
 
 
     def init(self):
@@ -215,8 +231,8 @@ class mainWindow(QMainWindow):
         # self.resize(int(width ), int(height ) )
 
         self.penWidth = 25
-        self.regularImageWidth = 330
-        self.regularImageHeight = int(330 * 1.4) 
+        self.regularImageWidth = 210
+        self.regularImageHeight = int(210 * 1.4) 
         self.fontStyle = "{ font-family:'Microsoft YaHei';" + "font-size:25px;color:#666666;}"
 
         self.CreateLayout()
@@ -293,11 +309,15 @@ class mainWindow(QMainWindow):
         listWidget.setMovement(QListView.Static)
         listWidget.setSpacing(30)
 
+        with open("./resource/no_image.png", "rb") as f:
+            null_poster = f.read()
+
         for i in self.movieList.keys():
-            posterPath = self.movieList[i]['cover_path']
-            if posterPath == "":
-                posterPath = "./resource/no_image.jpg"
-            pm = QPixmap(posterPath)
+            poster = self.movieList[i]['cover']
+            if poster is None:
+                poster = null_poster
+            pm = QPixmap()
+            pm.loadFromData(poster, "png")
 
             item = QListWidgetItem(QIcon(pm.scaled(QSize(self.regularImageWidth, self.regularImageHeight))), self.movieList[i]['title'])
             # item = QListWidgetItem("test")
@@ -353,6 +373,46 @@ class MovieListWidget(QListWidget):
         videoPath = self.I_mainWindow.movieList[item.index]['video_path']
         cmd = ("PotPlayerMini64.exe " + videoPath)
         os.popen(cmd)
+
+    
+# class LoadMovieListWidget(QThread):
+#     trigger = pyqtSignal()
+#     movieList = dict()
+#     def __init__(self, movieList):
+#         super(LoadMovieListWidget, self).__init__()
+#         self.movieList = movieList
+
+#     def run(self):
+#         listWidget = MovieListWidget(self)
+#         listWidget.setI_mainWindow(self)
+#         # listWidget.setItemAlignment(Qt.AlignCenter)
+#         listWidget.setIconSize(QSize(self.regularImageWidth, self.regularImageHeight))
+#         listWidget.setResizeMode(QListView.Adjust)
+#         listWidget.setViewMode(QListView.IconMode)
+#         listWidget.setMovement(QListView.Static)
+#         listWidget.setSpacing(30)
+
+#         for i in self.movieList.keys():
+#             posterPath = self.movieList[i]['cover_path']
+#             if posterPath == "":
+#                 posterPath = "./resource/no_image.jpg"
+#             pm = QPixmap(posterPath)
+
+#             item = QListWidgetItem(QIcon(pm.scaled(QSize(self.regularImageWidth, self.regularImageHeight))), self.movieList[i]['title'])
+#             # item = QListWidgetItem("test")
+#             font = QFont()
+#             font.setPixelSize(25)
+#             item.setFont(font)
+#             item.index = i
+#             item.setSizeHint(QSize(self.regularImageWidth, self.regularImageHeight+30))
+#             # listWidget.insertItem(i, item)
+#             listWidget.addItem(item)
+#         # listWidget.itemClicked.connect(listWidget.movieClicked)
+#         listWidget.itemDoubleClicked.connect(listWidget.movieDoubleClicked)
+#         listWidget.itemPressed.connect(listWidget.mousePressed)
+#             # item.clicked.connect(self.movieClicked)
+#             # listwidget.ItemClicked.connect(movieClicked)
+#         self.trigger.emit(listWidget)
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)

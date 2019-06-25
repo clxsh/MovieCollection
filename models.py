@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, ForeignKey, Table
+from sqlalchemy import Column, Integer, String, ForeignKey, Table, BLOB
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -29,7 +29,8 @@ class Movie(Base):
     title = Column(String)
     actress_id = Column(Integer, ForeignKey("actresses.id"))
     actress = relationship("Actress", back_populates="movies")
-    cover_path = Column(String)
+    # cover_path = Column(String)
+    cover = Column(BLOB)
     video_path = Column(String)
 
     tags = relationship("Tag",

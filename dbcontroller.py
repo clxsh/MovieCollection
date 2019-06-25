@@ -32,14 +32,14 @@ def addtodb(movie_detail):
         tags.append(tag)
 
     movie = Movie(title=movie_detail["title"], actress_id=actress.id, actress=actress,
-                  cover_path=movie_detail["cover_path"], video_path=movie_detail["video_path"], tags=tags)
+                  cover=movie_detail["cover"], video_path=movie_detail["video_path"], tags=tags)
 
     session.add(movie)
 
     session.commit()
 
 
-def query_movie(actress = None, tag=None):
+def query_movie(actress = None, tag=None, movie_id = None):
     session = Session()
 
     movies = {}
@@ -52,6 +52,9 @@ def query_movie(actress = None, tag=None):
     elif tag is not None:
         movies = session.query(Tag).filter_by(text=tag).first().movies
 
+    elif movie_id is not None:
+        movies = session.query(Movie).filter_by(id=movie_id).all()
+
     else:
         movies = session.query(Movie).all()
 
@@ -61,7 +64,7 @@ def query_movie(actress = None, tag=None):
         movie_detail["title"] = movie.title
         movie_detail["actress"] = movie.actress.name
         movie_detail["tags"] = [t.text for t in movie.tags]
-        movie_detail["cover_path"] = movie.cover_path
+        movie_detail["cover"] = movie.cover
         movie_detail["video_path"] = movie.video_path
 
         movie_dict[movie.id] = movie_detail

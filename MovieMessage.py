@@ -4,8 +4,10 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 import PyQt5
 import sys
+import os
 
 from dirwallthrough import alter_tag, MType
+from dbcontroller import query_movie
 
 class MovieMessage(QDialog):
     def __init__(self, parent=None):
@@ -16,6 +18,10 @@ class MovieMessage(QDialog):
         self.buttonWidget = QWidget()
         self.label_poster = QLabel()
         self.t = 1
+
+        icon = QIcon()
+        icon.addPixmap(QPixmap("./resource/icon.ico"), QIcon.Normal, QIcon.Off)
+        self.setWindowIcon(icon)
     def setIndex(self, index):
         self.index = index
     def setMessage(self, message):
@@ -95,11 +101,14 @@ class MovieMessage(QDialog):
         # poster = QImage(300, 300, QImage.Format_RGB888)
         # poster.load(self.message['cover_path'])
 
-        posterPath = self.message['cover_path']
-        if posterPath.strip() == '':
-            posterPath = "./resource/no_image.jpg"
+        poster = self.message['cover']
+        if poster is None:
+            with open("./resource/no_image.png", "rb") as f:
+                poster = f.read()
+        pm = QPixmap()
+        pm.loadFromData(poster, "png")
 
-        self.label_poster.setPixmap(QPixmap(posterPath))
+        self.label_poster.setPixmap(pm)
         # label_image.resize(300, 300)
         self.label_poster.setScaledContents(True)
         self.label_poster.resize(self.regularImageWidth, self.regularImageHeight)
@@ -133,23 +142,30 @@ class MovieMessage(QDialog):
         self.label_tagsName = QTextEdit(self.buttonWidget)
         stringTag = ''
         for string in self.message['tags']:
-            stringTag = stringTag + string + ", "
-        self.label_tagsName.setText(stringTag)
+            stringTag = stringTag + string + ",  "
+        self.label_tagsName.setText(stringTag[0:-3])
         self.label_tagsName.setStyleSheet('QTextEdit' + self.fontStyle)
         self.label_tagsName.setReadOnly(True)
+        self.label_tagsName.setFixedHeight(100)
 
-        self.lineEdit = QLineEdit(self.buttonWidget)
+        self.addLineEdit = QLineEdit(self.buttonWidget)
+        self.delLineEdit = QLineEdit(self.buttonWidget)
         # self.lineEdit.move(QTextEdit.End)
         # self.lineEdit.setCursorMoveStyle
         button_addTag = QPushButton('添加标签', self.buttonWidget)
         button_addTag.clicked.connect(self.addTag)
 
+        button_delTag = QPushButton("删除标签", self.buttonWidget)
+        button_delTag.clicked.connect(self.delTag)
 
 
         button_cancel = QPushButton( '退出', self)
         button_cancel.setStyleSheet(fontStyle1)
-
         button_cancel.clicked.connect(self.close)
+
+        button_play = QPushButton("播放", self)
+        button_play.setStyleSheet(fontStyle1)
+        button_play.clicked.connect(self.play_video)
 
 
         gridLayout.addWidget(label_title, 0, 0)
@@ -159,11 +175,14 @@ class MovieMessage(QDialog):
         gridLayout.addWidget(self.label_actorName, 1, 1)
         gridLayout.addWidget(label_tag, 2, 0)
         gridLayout.addWidget(self.label_tagsName, 3, 0, 1, 2)
-        gridLayout.addWidget(self.lineEdit, 4, 0, 1, 1)
+        gridLayout.addWidget(self.addLineEdit, 4, 0, 1, 1)
         gridLayout.addWidget(button_addTag, 4, 1, 1, 1)
+        gridLayout.addWidget(self.delLineEdit, 5, 0, 1, 1)
+        gridLayout.addWidget(button_delTag, 5, 1, 1, 1)
 
 
-        gridLayout.addWidget(button_cancel, 5, 0)
+        gridLayout.addWidget(button_cancel, 6, 0)
+        gridLayout.addWidget(button_play, 6, 1)
         
 
         # splitterMain = QSplitter(Qt.Vertical, self)
@@ -193,17 +212,50 @@ class MovieMessage(QDialog):
     def addTag(self):
         # self.label_tagsName.setCursor
         # self.label_tagsName.append(self.lineEdit.text() + ', ')
-        if self.lineEdit.text().strip(' ') == '':
+        tagtext = self.addLineEdit.text().strip()
+        if tagtext == '':
             return
 
-        tagtext = self.lineEdit.text().strip()
-        self.label_tagsName.insertPlainText(tagtext + ', ')
+        if self.label_tagsName.toPlainText() == "":
+            self.label_tagsName.append(tagtext)
+        else:
+            tags = self.label_tagsName.toPlainText() + ',  ' + tagtext
+            self.label_tagsName.setPlainText(tags)
 
         alter_tag(MType.ADD, self.index, tagtext)
         self.I_mainWindow.updateLabelsWidget()
+
+        self.updateMainWindowMovieList(self.index)
+
+    def delTag(self):
+        tagtext = self.delLineEdit.text().strip()
+        if tagtext == '':
+            return
+
+        tags = self.label_tagsName.toPlainText()
+        if tagtext in tags:
+            if tags.endswith(tagtext):
+                tags = tags.replace(",  " + tagtext, "")
+            else:
+                tags = tags.replace(tagtext + ",  ", "")
+
+        self.label_tagsName.setPlainText(tags)
+        alter_tag(MType.DEL, self.index, tagtext)
+        self.I_mainWindow.updateLabelsWidget()
+        self.updateMainWindowMovieList(self.index)
+    
+
+    def play_video(self):
+        
+        cmd = ("PotPlayerMini64.exe " + self.message["video_path"])
+        os.popen(cmd)
 
     def setI_mainWindow(self, mainWin):
         self.I_mainWindow = mainWin
         self.regularImageWidth = self.I_mainWindow.regularImageWidth
         self.regularImageHeight = self.I_mainWindow.regularImageHeight
+
+    def updateMainWindowMovieList(self, movie_id):
+        self.I_mainWindow.movieList[movie_id] = query_movie(movie_id=movie_id)[movie_id]
+        print(self.I_mainWindow.movieList[movie_id]["tags"])
 

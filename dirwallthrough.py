@@ -29,9 +29,10 @@ def walkthrough(path):
 
                 cover_path = os.path.join(dirpath, split_name[0]+".png")
                 if os.path.isfile(cover_path):
-                    movie_detail["cover_path"] = cover_path
+                    with open(cover_path, "rb") as f:
+                        movie_detail["cover"] = f.read()
                 else:
-                    movie_detail["cover_path"] = ""
+                    movie_detail["cover"] = None
 
                 movie_detail["title"] = split_name[0]
                 movie_detail["video_path"] = os.path.join(dirpath, file_name)
@@ -125,6 +126,13 @@ def alter_tag(type, movie_id, tagtext):
 
         session.add(movie)
         session.commit()
+
+        tag = session.query(Tag).filter_by(text=tagtext).first()
+        print("alter_tag: ")
+        print(tag.movies)
+        if len(tag.movies) == 0:
+            session.delete(tag)
+            session.commit()
 
         delfromnfo(os.path.join(os.path.dirname(movie.video_path), movie.title + ".nfo"), tagtext)
         
