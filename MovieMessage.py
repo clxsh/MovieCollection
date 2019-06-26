@@ -1,9 +1,8 @@
 # coding:utf-8
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-import PyQt5
-import sys
+from PyQt5.QtWidgets import (QDialog, QHBoxLayout, QWidget, QLabel, QGridLayout, QTextEdit, QLineEdit, QPushButton
+                             )
+from PyQt5.QtGui import QIcon, QPixmap
+from PyQt5.QtCore import Qt
 import os
 
 from dirwallthrough import alter_tag, MType
@@ -216,16 +215,19 @@ class MovieMessage(QDialog):
         if tagtext == '':
             return
 
-        if self.label_tagsName.toPlainText() == "":
-            self.label_tagsName.append(tagtext)
-        else:
-            tags = self.label_tagsName.toPlainText() + ',  ' + tagtext
-            self.label_tagsName.setPlainText(tags)
+        tags = self.label_tagsName.toPlainText()
 
-        alter_tag(MType.ADD, self.index, tagtext)
-        self.I_mainWindow.updateLabelsWidget()
+        if tagtext not in tags:
+            if tags == "":
+                self.label_tagsName.append(tagtext)
+            else:
+                tags = self.label_tagsName.toPlainText() + ',  ' + tagtext
+                self.label_tagsName.setPlainText(tags)
 
-        self.updateMainWindowMovieList(self.index)
+            alter_tag(MType.ADD, self.index, tagtext)
+            self.I_mainWindow.updateLabelsWidget()
+
+            self.updateMainWindowMovieList(self.index)
 
     def delTag(self):
         tagtext = self.delLineEdit.text().strip()
@@ -233,16 +235,20 @@ class MovieMessage(QDialog):
             return
 
         tags = self.label_tagsName.toPlainText()
+        print(len(tags))
+        print(len(tagtext))
         if tagtext in tags:
-            if tags.endswith(tagtext):
+            if len(tags) == len(tagtext):
+                tags = ""
+            elif tags.endswith(tagtext):
                 tags = tags.replace(",  " + tagtext, "")
             else:
                 tags = tags.replace(tagtext + ",  ", "")
 
-        self.label_tagsName.setPlainText(tags)
-        alter_tag(MType.DEL, self.index, tagtext)
-        self.I_mainWindow.updateLabelsWidget()
-        self.updateMainWindowMovieList(self.index)
+            self.label_tagsName.setPlainText(tags)
+            alter_tag(MType.DEL, self.index, tagtext)
+            self.I_mainWindow.updateLabelsWidget()
+            self.updateMainWindowMovieList(self.index)
     
 
     def play_video(self):
@@ -257,5 +263,4 @@ class MovieMessage(QDialog):
 
     def updateMainWindowMovieList(self, movie_id):
         self.I_mainWindow.movieList[movie_id] = query_movie(movie_id=movie_id)[movie_id]
-        print(self.I_mainWindow.movieList[movie_id]["tags"])
 

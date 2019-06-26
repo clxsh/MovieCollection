@@ -37,6 +37,7 @@ def addtodb(movie_detail):
     session.add(movie)
 
     session.commit()
+    session.close()
 
 
 def query_movie(actress = None, tag=None, movie_id = None):
@@ -69,6 +70,8 @@ def query_movie(actress = None, tag=None, movie_id = None):
 
         movie_dict[movie.id] = movie_detail
 
+    session.close()
+
     return movie_dict
 
 
@@ -79,6 +82,8 @@ def query_actress():
     actress_list = [actress.name for actress in actresses if actress.name != ""]
     actress_list.append("未知姓名")
 
+    session.close()
+
     return actress_list
 
 
@@ -87,6 +92,8 @@ def query_tag():
 
     tags = session.query(Tag).all()
     tag_list = [tag.text for tag in tags]
+
+    session.close()
 
     return tag_list
 
@@ -99,5 +106,10 @@ def create_db():
     from dbcontroller import engine
     from models import Base
 
-    Base.metadata.drop_all(engine)
+    # Base.metadata.drop_all(engine)
+    if os.path.exists("./sqlite.db"):
+    #删除文件，可使用以下两种方法。
+        engine.dispose()
+        os.remove("./sqlite.db")
+        engine = create_engine(sql_address)
     Base.metadata.create_all(engine)

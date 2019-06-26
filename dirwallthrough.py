@@ -128,11 +128,11 @@ def alter_tag(type, movie_id, tagtext):
         session.commit()
 
         tag = session.query(Tag).filter_by(text=tagtext).first()
-        print("alter_tag: ")
-        print(tag.movies)
         if len(tag.movies) == 0:
             session.delete(tag)
             session.commit()
 
         delfromnfo(os.path.join(os.path.dirname(movie.video_path), movie.title + ".nfo"), tagtext)
+
+    session.close()
         

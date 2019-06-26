@@ -1,18 +1,19 @@
 # coding:utf-8
-from PyQt5.QtWidgets import *
-from PyQt5.QtGui import *
-from PyQt5.QtCore import *
-import PyQt5
+from PyQt5.QtWidgets import (QMainWindow, QStatusBar, QAction, QFileDialog, QApplication, QDockWidget, QWidget,
+                             QVBoxLayout, QLabel, QAbstractItemView, QListWidget, QListWidgetItem, QListView)
+from PyQt5.QtGui import (QIcon, QPixmap, QFont)
+from PyQt5.QtCore import Qt, QEventLoop, QSize, QTimer
 import sys
 import os
 import time
 
-from dbcontroller import query_movie, query_tag, query_actress, create_db
-from ImageLabel import ImageLabel
+from dbcontroller import query_movie, query_tag, query_actress, create_db, addtodb
 from MovieMessage import MovieMessage
-from TitleLabel import TitleLabel
-from dirwallthrough import walkthrough
-#import test1
+from dirwallthrough import parse_nfo, create_nfo
+
+
+video_ext = [".mkv", ".mp4", ".wmv", ".avi"]
+
 
 # listWidget 是视频列表， labelWidget是标签页面
 # listWidget, dock_listWidget, movieList
@@ -27,6 +28,9 @@ class mainWindow(QMainWindow):
         icon = QIcon()
         icon.addPixmap(QPixmap("./resource/icon.ico"), QIcon.Normal, QIcon.Off)
         self.setWindowIcon(icon)
+
+        self.statusBar = QStatusBar(self)
+        self.setStatusBar(self.statusBar)
 
         bar = self.menuBar()
         file = bar.addMenu("文件")
@@ -79,12 +83,8 @@ class mainWindow(QMainWindow):
         self.delListWidgetItems(self.movieListWidget)
         del self.movieList
 
-        beforetime = time.time()
-        print("before query: " + str(time.time()))
         self.movieList = query_movie()
-        print("after query before update: " + str(time.time()))
         self.updateMovieListWidget()
-        print("after update: " + str(time.time()))
         aftertime = time.time()
 
 
@@ -101,17 +101,56 @@ class mainWindow(QMainWindow):
         self.updateMovieListWidget()
 
     def addDir(self):
+        
         dlg = QFileDialog()
         dlg.setFileMode(QFileDialog.Directory)
 
         directory = dlg.getExistingDirectory()
-        walkthrough(directory)
-        self.updateLabelsWidget()
 
-        self.delListWidgetItems(self.movieListWidget)
-        del self.movieList
-        self.movieList = query_movie()
-        self.updateMovieListWidget()
+        self.statusBar.clearMessage()
+        self.statusBar.showMessage("正在扫描请稍后........", 20000)
+        print(directory)
+        if directory != "":
+            for dirpath, dirname, files in os.walk(directory):
+                self.statusBar.showMessage(dirpath, 20000)
+                for file_name in files:
+                    QApplication.processEvents(QEventLoop.ExcludeUserInputEvents)
+                    split_name = os.path.splitext(file_name)
+                    if split_name[1] in video_ext:
+                        movie_detail = {}
+
+                        nfo_path = os.path.join(dirpath, split_name[0]+".nfo")
+                        if os.path.isfile(nfo_path):
+                            movie_detail = parse_nfo(nfo_path)
+                        else:
+                            create_nfo(nfo_path)
+                            movie_detail["actress"] = ""
+                            movie_detail["tags"] = []
+
+                        cover_path = os.path.join(dirpath, split_name[0]+".png")
+                        if os.path.isfile(cover_path):
+                            with open(cover_path, "rb") as f:
+                                movie_detail["cover"] = f.read()
+                        else:
+                            movie_detail["cover"] = None
+
+                        movie_detail["title"] = split_name[0]
+                        movie_detail["video_path"] = os.path.join(dirpath, file_name)
+
+                        # print(movie_detail)
+                        addtodb(movie_detail)
+
+            self.updateLabelsWidget()
+
+            self.delListWidgetItems(self.movieListWidget)
+            del self.movieList
+            self.movieList = query_movie()
+            self.updateMovieListWidget()
+
+            self.statusBar.showMessage("扫描结束", 3000)
+
+        else:
+            self.statusBar.showMessage("未选择任何文件夹", 3000)
 
 
     def WinMovieMessage(self):
@@ -209,13 +248,17 @@ class mainWindow(QMainWindow):
 
 
     def updateMovieListWidget(self):
-        # print("before add widget: " + str(time.time()))
-            # self.thread = LoadMovieListWidget(self.movieList)
-            # self.thread.start()
-            # self.thread.trigger.connect(self.process_thread)
+        
         self.movieListWidget = self.addMovieWidget()
-        # print("after add before set: " + str(time.time()))
+
+        # TODO: 使滑动更加平滑 NOT WORKING
+        self.movieListWidget.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
+        self.movieListWidget.setVerticalScrollBarPolicy
+
+
         self.dock_movieList.setWidget(self.movieListWidget)
+        # self.dock_movieList.setWidget(self.scrollBar)
+
         # print("after set: " + str(time.time()))
 
     # def process_thread(self, listWidget):
@@ -313,6 +356,7 @@ class mainWindow(QMainWindow):
             null_poster = f.read()
 
         for i in self.movieList.keys():
+            QApplication.processEvents(QEventLoop.ExcludeUserInputEvents)
             poster = self.movieList[i]['cover']
             if poster is None:
                 poster = null_poster
@@ -415,8 +459,12 @@ class MovieListWidget(QListWidget):
 #         self.trigger.emit(listWidget)
 
 if __name__ == '__main__':
+
     app = QApplication(sys.argv)
     uiSystem = mainWindow()
     #test1.Test()
     uiSystem.showMaximized()
     sys.exit(app.exec_())
+    # except:
+    #     while True:
+    #         pass
