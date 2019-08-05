@@ -109,7 +109,6 @@ class mainWindow(QMainWindow):
 
         self.statusBar.clearMessage()
         self.statusBar.showMessage("正在扫描请稍后........", 20000)
-        print(directory)
         if directory != "":
             for dirpath, dirname, files in os.walk(directory):
                 self.statusBar.showMessage(dirpath, 20000)

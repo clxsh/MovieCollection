@@ -4,8 +4,9 @@ block_cipher = None
 
 
 a = Analysis(['main.py'],
-             pathex=['C:\\Users\\liu\\PycharmProjects\\MovieCollection'],
-             binaries=[],
+             pathex=['C:\\Users\\liu\\Desktop\\MovieCollection'],
+             binaries=[("./resource", "./resource"),
+                        ("sqlite.db", ".")],
              datas=[],
              hiddenimports=[],
              hookspath=[],
@@ -26,7 +27,7 @@ exe = EXE(pyz,
           bootloader_ignore_signals=False,
           strip=False,
           upx=True,
-          console=True )
+          console=False , uac_admin=True, icon='resource\\icon.ico')
 coll = COLLECT(exe,
                a.binaries,
                a.zipfiles,

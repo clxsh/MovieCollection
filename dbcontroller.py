@@ -1,5 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext import baked
 import os
 
 from models import Actress, Tag, Movie
@@ -71,7 +72,7 @@ def query_movie(actress = None, tag=None, movie_id = None):
         movie_dict[movie.id] = movie_detail
 
     session.close()
-
+    # print(movie_dict)
     return movie_dict
 
 

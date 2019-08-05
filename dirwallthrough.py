@@ -46,10 +46,14 @@ def walkthrough(path):
 def parse_nfo(filepath):
     tree = etree.parse(filepath)
 
-    actress = tree.find("actor")[0].text
+    actresstag = tree.find("actor")
+    if actresstag:
+        actress = actresstag[0].text
+    else:
+        actress = None
     if actress is not None:
         actress = actress.strip()
-    if actress == None:
+    else:
         actress = ""
     tags = [tag.text for tag in tree.findall("tag")]
 
